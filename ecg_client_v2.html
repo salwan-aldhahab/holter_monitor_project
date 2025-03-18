@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG WebSocket Monitor</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1 { color: #333; }
+        p { font-size: 18px; }
+        span { font-weight: bold; color: blue; }
+        button { padding: 10px; margin-top: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>ESP32 ECG WebSocket Monitor</h1>
+    <p>Status: <span id="status">Connecting...</span></p>
+    <p>ECG Data: <span id="ecgData">Waiting...</span></p>
+    
+    <button onclick="sendTestMessage()">Send Test Message</button>
+
+    <script>
+        const ws = new WebSocket("ws://192.168.98.113:81"); // Replace with your ESP32 IP
+
+        ws.onopen = () => {
+            document.getElementById("status").innerText = "Connected";
+            document.getElementById("status").style.color = "green";
+            console.log("Connected to WebSocket");
+        };
+
+        ws.onmessage = (event) => {
+            document.getElementById("ecgData").innerText = event.data;
+            console.log("ECG Data Received:", event.data);
+        };
+
+        ws.onclose = () => {
+            document.getElementById("status").innerText = "Disconnected";
+            document.getElementById("status").style.color = "red";
+            console.log("WebSocket Disconnected. Reconnecting in 3 seconds...");
+            setTimeout(() => location.reload(), 3000); // Auto-refresh page on disconnect
+        };
+
+        function sendTestMessage() {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send("Hello ESP32!");
+                console.log("Sent: Hello ESP32!");
+            } else {
+                alert("WebSocket is not connected!");
+            }
+        }
+    </script>
+</body>
+</html>

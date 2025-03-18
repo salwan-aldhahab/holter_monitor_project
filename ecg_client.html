@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECG Monitor</title>
+</head>
+<body>
+    <h1>ECG Data: <span id="ecgData">Waiting...</span></h1>
+
+    <script>
+        const ws = new WebSocket("ws://192.168.98.113:81"); // Change IP address to your ESP32 IP address
+
+        ws.onopen = () => console.log("Connected to WebSocket");
+        ws.onmessage = (event) => {
+            console.log("ECG Value:", event.data);
+            document.getElementById("ecgData").innerText = event.data;
+        };
+        ws.onclose = () => console.log("WebSocket Disconnected");
+    </script>
+</body>
+</html>
